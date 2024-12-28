@@ -1,0 +1,6 @@
+fastapi[standard]==0.115.6
+slowapi==0.1.9
+celery==5.4.0
+redis==5.2.1
+flower==2.0.1
+paramiko==3.5.0

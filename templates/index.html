@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/htmx.org@2.0.4"
+    integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+  <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+  <title>HTMX</title>
+</head>
+
+<body>
+  <h1>Hello, World!</h1>
+</body>
+<table class="table delete-row-example">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody hx-target="closest tr" hx-swap="outerHTML swap:1s">
+    {% include 'partials/table.html' %}
+  </tbody>
+</table>
+<div>
+  <button name="filename" value="ubuntu-24.04.1-desktop-amd64.iso" type="submit" class="btn btn-primary"
+    hx-post="/api/copy" hx-swap="none" hx-ext="json-enc">Start</button>
+</div>
+</html>

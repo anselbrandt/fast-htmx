@@ -1,0 +1,12 @@
+{% for user in users %}
+<tr>
+    <td>{{user.name}}</td>
+    <td>{{user.email}}</td>
+    <td>{{user.status}}</td>
+    <td>
+        <button class="btn danger" hx-delete="/api/delete/{{user.id}}">
+            Delete
+        </button>
+    </td>
+</tr>
+{% endfor %}
