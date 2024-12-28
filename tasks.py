@@ -20,6 +20,13 @@ LOCAL_ROOT_PATH = os.getenv("LOCAL_ROOT_PATH")
 celery = Celery("tasks", broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
 
 
+def updateProgress(id):
+    def update(transferred, total):
+        cache.set(id, json.dumps({"transferred": transferred, "total": total}))
+
+    return update
+
+
 @celery.task(bind=True)
 def copyFile(self, filename):
     id = self.request.id
@@ -31,9 +38,7 @@ def copyFile(self, filename):
     sftp.get(
         inpath,
         outpath,
-        callback=lambda transferred, total: (
-            cache.set(id, json.dumps({"transferred": transferred, "total": total}))
-        ),
+        callback=updateProgress(id),
     )
     sftp.close()
     transport.close()

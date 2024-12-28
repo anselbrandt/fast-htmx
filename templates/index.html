@@ -34,14 +34,6 @@
     <div class="container">
       <div class="row mb-2">
         <div class="col">
-          <h1 class="mb-4">Progress Bar</h1>
-          <div class="progress" role="progressbar" hx-get="/progress" hx-trigger="load, progress from:body" ,
-            hx-target="this" hx-swap="innerHTML">
-          </div>
-        </div>
-      </div>
-      <div class="row mb-2">
-        <div class="col">
           <button class="btn btn-primary" name="filename" value="2024-11-19-raspios-bookworm-arm64-lite.img.xz"
             type="submit" class="btn btn-primary" hx-post="/api/copy" hx-swap="none" hx-ext="json-enc">Start</button>
         </div>
