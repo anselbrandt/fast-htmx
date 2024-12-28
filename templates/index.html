@@ -13,23 +13,27 @@
 </head>
 
 <body>
-  <h1>Hello, World!</h1>
+  <div>
+    <div>
+      <table class="table delete-row-example">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody hx-target="closest tr" hx-swap="outerHTML swap:1s">
+          {% include 'partials/table.html' %}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <button name="filename" value="ubuntu-24.04.1-desktop-amd64.iso" type="submit" class="btn btn-primary"
+        hx-post="/api/copy" hx-swap="none" hx-ext="json-enc">Start</button>
+    </div>
+  </div>
 </body>
-<table class="table delete-row-example">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody hx-target="closest tr" hx-swap="outerHTML swap:1s">
-    {% include 'partials/table.html' %}
-  </tbody>
-</table>
-<div>
-  <button name="filename" value="ubuntu-24.04.1-desktop-amd64.iso" type="submit" class="btn btn-primary"
-    hx-post="/api/copy" hx-swap="none" hx-ext="json-enc">Start</button>
-</div>
+
 </html>
