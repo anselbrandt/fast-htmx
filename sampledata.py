@@ -1,4 +1,4 @@
-users = [
+sampleusers = [
     {"id": 0, "name": "Joe Smith", "email": "joe@smith.org", "status": "Active"},
     {
         "id": 1,
@@ -15,13 +15,13 @@ users = [
     {"id": 3, "name": "Kim Yee", "email": "kim@yee.org", "status": "Inactive"},
 ]
 
-tasks = [
+sampletasks = [
     {"id": 123, "name": "one-two-three"},
     {"id": 456, "name": "four-five-six"},
     {"id": 789, "name": "seven-eight-nine"},
 ]
 
-files = [
+samplefiles = [
     "2024-11-19-raspios-bookworm-arm64-lite.img.xz",
     "Howard.The.Duck.1986.1080P.Bluray.hevc.h3llg0d.mkv",
     "ubuntu-24.04.1-desktop-amd64.iso",
