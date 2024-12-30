@@ -59,6 +59,22 @@ async def start(
     return templates.TemplateResponse("running.html", context)
 
 
+class Data(BaseModel):
+    filename: str
+
+
+@app.post("/copy")
+async def copy(request: Request, data: Data, response: Response):
+    response.status_code = status.HTTP_200_OK
+    filename = data.filename
+    res = copyFile.delay(filename)
+    id = res.task_id
+    progress = {"transferred": 0, "total": 0}
+    cache.set(id, json.dumps(progress))
+    context = {"request": request, "rootPath": ROOT_PATH, "id": id}
+    return templates.TemplateResponse("copying.html", context)
+
+
 @app.get("/job/progress/{id}")
 async def job(
     request: Request,
@@ -91,7 +107,50 @@ async def job(
         )
 
 
+@app.get("/task/progress/{id}")
+async def task(
+    request: Request,
+    response: Response,
+    id: str,
+    hx_request: Optional[str] = Header(None),
+):
+    result = cache.get(id)
+    data = json.loads(result)
+    transferred, total = data.values()
+    progress = 0 if total == 0 else round((transferred / total) * 100)
+    if progress < 100:
+        context = {
+            "request": request,
+            "rootPath": ROOT_PATH,
+            "progress": progress,
+            "id": id,
+        }
+        return templates.TemplateResponse("progress.html", context)
+    if progress == 100:
+        context = {
+            "request": request,
+            "rootPath": ROOT_PATH,
+            "progress": progress,
+            "id": id,
+        }
+        response.headers["HX-Trigger"] = "done"
+        return templates.TemplateResponse(
+            "progress.html", context, headers=response.headers
+        )
+
+
 @app.get("/job/{id}")
+async def job(
+    request: Request,
+    response: Response,
+    id: str,
+    hx_request: Optional[str] = Header(None),
+):
+    context = {"request": request, "rootPath": ROOT_PATH, "id": id}
+    return templates.TemplateResponse("complete.html", context)
+
+
+@app.get("/task/{id}")
 async def job(
     request: Request,
     response: Response,
@@ -115,27 +174,11 @@ async def delete(request: Request, id: str, response: Response):
     return response
 
 
-class Data(BaseModel):
-    filename: str
-
-
-@app.post("/copy")
-async def copy(data: Data, response: Response):
-    response.status_code = status.HTTP_200_OK
-    print(data)
-    filename = data.filename
-    # res = copyFile.delay(filename)
-    # id = res.task_id
-    # progress = {"transferred": 0, "total": 0}
-    # cache.set(id, json.dumps(progress))
-    return filename
-
-
-@app.get("/progress/{id}")
-async def progress(request: Request):
-    result = cache.get(id)
-    data = json.loads(result)
-    transferred, total = data.values()
-    progress = 0 if total == 0 else round((transferred / total) * 100)
-    context = {"request": request, "rootPath": ROOT_PATH, "progress": progress}
-    return templates.TemplateResponse("partials/progressbar.html", context)
+# @app.get("/progress/{id}")
+# async def progress(request: Request):
+#     result = cache.get(id)
+#     data = json.loads(result)
+#     transferred, total = data.values()
+#     progress = 0 if total == 0 else round((transferred / total) * 100)
+#     context = {"request": request, "rootPath": ROOT_PATH, "progress": progress}
+#     return templates.TemplateResponse("partials/progressbar.html", context)
