@@ -1,7 +1,8 @@
 {% for file in files %}
 <div class="m-2">
     <div hx-target="this" hx-swap="outerHTML">
-        <button name="filename" value="{{file}}" class="btn btn-primary m-2" hx-post="/api/copy" hx-ext='json-enc'>
+        <button name="filename" value="{{file}}" class="btn btn-primary m-2" hx-post="{{rootPath}}/copy"
+            hx-ext='json-enc'>
             Copy {{file}}
         </button>
     </div>

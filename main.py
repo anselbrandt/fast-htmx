@@ -55,7 +55,7 @@ async def start(
     hx_request: Optional[str] = Header(None),
 ):
     cache.set(f"progress_{id}", 0)
-    context = {"request": request, "id": id}
+    context = {"request": request, "rootPath": ROOT_PATH, "id": id}
     return templates.TemplateResponse("running.html", context)
 
 
@@ -71,10 +71,20 @@ async def job(
     if progress < 100:
         progress = progress + 10
         cache.set(f"progress_{id}", progress)
-        context = {"request": request, "progress": progress, "id": id}
+        context = {
+            "request": request,
+            "rootPath": ROOT_PATH,
+            "progress": progress,
+            "id": id,
+        }
         return templates.TemplateResponse("progress.html", context)
     if progress == 100:
-        context = {"request": request, "progress": progress, "id": id}
+        context = {
+            "request": request,
+            "rootPath": ROOT_PATH,
+            "progress": progress,
+            "id": id,
+        }
         response.headers["HX-Trigger"] = "done"
         return templates.TemplateResponse(
             "progress.html", context, headers=response.headers
@@ -88,7 +98,7 @@ async def job(
     id: str,
     hx_request: Optional[str] = Header(None),
 ):
-    context = {"request": request, "id": id}
+    context = {"request": request, "rootPath": ROOT_PATH, "id": id}
     return templates.TemplateResponse("complete.html", context)
 
 
@@ -127,5 +137,5 @@ async def progress(request: Request):
     data = json.loads(result)
     transferred, total = data.values()
     progress = 0 if total == 0 else round((transferred / total) * 100)
-    context = {"request": request, "progress": progress}
+    context = {"request": request, "rootPath": ROOT_PATH, "progress": progress}
     return templates.TemplateResponse("partials/progressbar.html", context)
