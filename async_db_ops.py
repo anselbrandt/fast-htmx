@@ -11,6 +11,7 @@ async def createTable(pool):
                 )
                 """
             )
+            await conn.commit()
 
 
 async def insert(pool, id, filename, status):
@@ -20,6 +21,7 @@ async def insert(pool, id, filename, status):
                 "INSERT INTO tasks(id, filename, status) VALUES(%s, %s, %s);",
                 (id, filename, status),
             )
+            await conn.commit()
 
 
 async def getTasks(pool):
@@ -37,3 +39,4 @@ async def update(pool, id, status):
                 "UPDATE tasks SET status=%s WHERE id=%s;",
                 (status, id),
             )
+            await conn.commit()

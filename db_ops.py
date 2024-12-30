@@ -11,6 +11,7 @@ def createTable(pool):
                 )
                 """
             )
+            conn.commit()
 
 
 def insert(pool, id, filename, status):
@@ -20,6 +21,7 @@ def insert(pool, id, filename, status):
                 "INSERT INTO tasks(id, filename, status) VALUES(%s, %s, %s);",
                 (id, filename, status),
             )
+            conn.commit()
 
 
 def getTasks(pool):
@@ -37,3 +39,4 @@ def update(pool, id, status):
                 "UPDATE tasks SET status=%s WHERE id=%s;",
                 (status, id),
             )
+            conn.commit()
