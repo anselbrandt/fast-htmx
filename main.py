@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from tasks import copyFile
 import redis
 import json
-from data import users, tasks
+from data import users, tasks, files
 
 cache = redis.Redis(decode_responses=True)
 
@@ -42,6 +42,7 @@ async def index(request: Request, hx_request: Optional[str] = Header(None)):
         "rootPath": ROOT_PATH,
         "tasks": tasks,
         "users": users,
+        "files": files,
     }
     return templates.TemplateResponse("index.html", context)
 
@@ -113,11 +114,11 @@ async def copy(data: Data, response: Response):
     response.status_code = status.HTTP_200_OK
     print(data)
     filename = data.filename
-    res = copyFile.delay(filename)
-    id = res.task_id
-    progress = {"transferred": 0, "total": 0}
-    cache.set(id, json.dumps(progress))
-    return id
+    # res = copyFile.delay(filename)
+    # id = res.task_id
+    # progress = {"transferred": 0, "total": 0}
+    # cache.set(id, json.dumps(progress))
+    return filename
 
 
 @app.get("/progress/{id}")

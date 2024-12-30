@@ -20,3 +20,9 @@ tasks = [
     {"id": 456, "name": "four-five-six"},
     {"id": 789, "name": "seven-eight-nine"},
 ]
+
+files = [
+    "2024-11-19-raspios-bookworm-arm64-lite.img.xz",
+    "Howard.The.Duck.1986.1080P.Bluray.hevc.h3llg0d.mkv",
+    "ubuntu-24.04.1-desktop-amd64.iso",
+]
