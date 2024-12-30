@@ -36,6 +36,12 @@ users = [
     {"id": 3, "name": "Kim Yee", "email": "kim@yee.org", "status": "Inactive"},
 ]
 
+tasks = [
+    {"id": 123, "name": "one-two-three"},
+    {"id": 456, "name": "four-five-six"},
+    {"id": 789, "name": "seven-eight-nine"},
+]
+
 app = FastAPI(root_path=ROOT_PATH)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -53,8 +59,58 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/", response_class=HTMLResponse)
 @limiter.limit("1/second")
 async def index(request: Request, hx_request: Optional[str] = Header(None)):
-    context = {"request": request, "rootPath": ROOT_PATH, "users": users}
+    context = {
+        "request": request,
+        "rootPath": ROOT_PATH,
+        "tasks": tasks,
+        "users": users,
+    }
     return templates.TemplateResponse("index.html", context)
+
+
+@app.post("/start/{id}")
+async def start(
+    request: Request,
+    response: Response,
+    id: str,
+    hx_request: Optional[str] = Header(None),
+):
+    cache.set(f"progress_{id}", 0)
+    context = {"request": request, "id": id}
+    return templates.TemplateResponse("running.html", context)
+
+
+@app.get("/job/progress/{id}")
+async def job(
+    request: Request,
+    response: Response,
+    id: str,
+    hx_request: Optional[str] = Header(None),
+):
+    current = cache.get(f"progress_{id}")
+    progress = int(current)
+    if progress < 100:
+        progress = progress + 10
+        cache.set(f"progress_{id}", progress)
+        context = {"request": request, "progress": progress, "id": id}
+        return templates.TemplateResponse("progress.html", context)
+    if progress == 100:
+        context = {"request": request, "progress": progress, "id": id}
+        response.headers["HX-Trigger"] = "done"
+        return templates.TemplateResponse(
+            "progress.html", context, headers=response.headers
+        )
+
+
+@app.get("/job/{id}")
+async def job(
+    request: Request,
+    response: Response,
+    id: str,
+    hx_request: Optional[str] = Header(None),
+):
+    context = {"request": request, "id": id}
+    return templates.TemplateResponse("complete.html", context)
 
 
 @app.post("/post")

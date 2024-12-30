@@ -1,0 +1,9 @@
+{% for task in tasks %}
+<div class="m-2">
+    <div hx-target="this" hx-swap="outerHTML">
+        <button class="btn btn-primary m-2" hx-post="/api/start/{{task.id}}">
+            Start {{task.name}}
+        </button>
+    </div>
+</div>
+{% endfor %}

@@ -16,7 +16,7 @@
 
 <body>
   <div>
-    <div>
+    <div class="m-2">
       <table class="table delete-row-example">
         <thead>
           <tr>
@@ -31,24 +31,10 @@
         </tbody>
       </table>
     </div>
-    <div class="container">
-      <div class="row mb-2">
-        <div class="col">
-          <button class="btn btn-primary" name="filename" value="2024-11-19-raspios-bookworm-arm64-lite.img.xz"
-            type="submit" class="btn btn-primary" hx-post="/api/copy" hx-swap="none" hx-ext="json-enc">Start</button>
-        </div>
-      </div>
+    <div class="m-2">
+      {% include 'partials/start.html' %}
     </div>
-
   </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script>
-  var socket = io();
-  socket.on("trigger-event", (data) => {
-    htmx.trigger(document.body, data.event);
-  });
-</script>
 
 </html>
