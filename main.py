@@ -205,13 +205,3 @@ async def post(request: Request, data):
 async def delete(request: Request, id: str, response: Response):
     response.status_code = status.HTTP_200_OK
     return response
-
-
-# @app.get("/progress/{id}")
-# async def progress(request: Request):
-#     result = cache.get(id)
-#     data = json.loads(result)
-#     transferred, total = data.values()
-#     progress = 0 if total == 0 else round((transferred / total) * 100)
-#     context = {"request": request, "rootPath": ROOT_PATH, "progress": progress}
-#     return templates.TemplateResponse("partials/progressbar.html", context)
