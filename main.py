@@ -13,7 +13,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 import redis
 
-from async_db_ops import getTasks
+from db_ops import getTasks
 from sampledata import sampleusers, sampletasks, samplefiles
 from routers.limiter import limiter
 from routers.open_routes import router as open_routes
@@ -34,9 +34,10 @@ def get_conn_str():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.async_pool = AsyncConnectionPool(conninfo=get_conn_str())
+    app.pool = AsyncConnectionPool(conninfo=get_conn_str(), open=False)
+    await app.pool.open()
     yield
-    await app.async_pool.close()
+    await app.pool.close()
 
 
 cache = redis.Redis(decode_responses=True)
@@ -135,7 +136,7 @@ async def alltasks(
     response: Response,
     hx_request: Optional[str] = Header(None),
 ):
-    results = await getTasks(request.app.async_pool)
+    results = await getTasks(request.app.pool)
     return results
 
 

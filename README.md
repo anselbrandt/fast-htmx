@@ -9,7 +9,7 @@ host.docker.internal
 ```
 
 ```
-celery -A worker worker --loglevel=INFO
+celery -A tasks worker --loglevel=INFO
 ```
 
 https://celery.school/celery-progress-bars-with-fastapi-htmx

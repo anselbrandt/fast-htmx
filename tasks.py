@@ -8,7 +8,7 @@ import paramiko
 from psycopg_pool import ConnectionPool
 import redis
 
-from db_ops import createTable, insert, update
+from db_ops import createTable, insert, delete
 
 load_dotenv()
 
@@ -35,14 +35,23 @@ pool = None
 
 cache = redis.Redis(decode_responses=True)
 
-celery = Celery("tasks", broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
+celery = Celery(
+    "tasks",
+    broker=CELERY_BROKER_URL,
+    backend=CELERY_RESULT_BACKEND,
+    broker_connection_retry_on_startup=True,
+)
 
 
 @worker_process_init.connect
 def init_worker(**kwargs):
     global pool
     pool = ConnectionPool(conninfo=get_conn_str())
-    createTable(pool)
+    try:
+        createTable(pool)
+        print("Creating tasks table")
+    except Exception as error:
+        print("Tasks table already exists")
 
 
 def updateProgress(id):
@@ -55,10 +64,10 @@ def updateProgress(id):
 @celery.task(bind=True)
 def copyFile(self, filename):
     id = self.request.id
-    insert(pool, id, filename, "in-progress")
+    insert(pool, id, filename)
     transport = paramiko.Transport((REMOTE_HOST, 22))
     inpath = f"{REMOTE_ROOT_PATH}/{filename}"
-    outpath = filename
+    outpath = f"{LOCAL_ROOT_PATH}/{filename}"
     transport.connect(None, SSH_USERNAME, SSH_PASSWORD)
     sftp = paramiko.SFTPClient.from_transport(transport)
     sftp.get(
@@ -68,7 +77,7 @@ def copyFile(self, filename):
     )
     sftp.close()
     transport.close()
-    update(pool, id, "done")
+    delete(pool, id)
 
 
 @worker_process_shutdown.connect

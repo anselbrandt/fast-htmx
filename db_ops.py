@@ -6,37 +6,36 @@ def createTable(pool):
                 CREATE TABLE IF NOT EXISTS tasks
                 (
                     ID TEXT PRIMARY KEY NOT NULL,
-                    FILENAME TEXT NOT NULL,
-                    STATUS TEXT NOT NULL
+                    FILENAME TEXT NOT NULL
                 )
                 """
             )
             conn.commit()
 
 
-def insert(pool, id, filename, status):
+def insert(pool, id, filename):
     with pool.connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO tasks(id, filename, status) VALUES(%s, %s, %s);",
-                (id, filename, status),
+                "INSERT INTO tasks(id, filename) VALUES(%s, %s);",
+                (id, filename),
             )
             conn.commit()
 
 
-def getTasks(pool):
+def delete(pool, id):
     with pool.connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT * FROM tasks WHERE status LIKE 'in-progress';")
-            results = cursor.fetchall()
+            cursor.execute(
+                "DELETE FROM tasks WHERE id=%s;",
+                (id,),
+            )
+            conn.commit()
+
+
+async def getTasks(pool):
+    async with pool.connection() as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("SELECT * FROM tasks;")
+            results = await cursor.fetchall()
             return results
-
-
-def update(pool, id, status):
-    with pool.connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(
-                "UPDATE tasks SET status=%s WHERE id=%s;",
-                (status, id),
-            )
-            conn.commit()
