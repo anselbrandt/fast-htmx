@@ -37,6 +37,9 @@
     <div class="m-2">
       {% include 'partials/copy.html' %}
     </div>
+    <div class="m-2">
+      <div hx-trigger="load" hx-get="{{rootPath}}/tasks" hx-swap="outerHTML" hx-target="this" />
+    </div>
   </div>
 </body>
 

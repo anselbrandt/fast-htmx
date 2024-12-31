@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from psycopg_pool import AsyncConnectionPool
+from psycopg.rows import dict_row
 from pydantic import BaseModel
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -34,7 +35,9 @@ def get_conn_str():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.pool = AsyncConnectionPool(conninfo=get_conn_str(), open=False)
+    app.pool = AsyncConnectionPool(
+        conninfo=get_conn_str(), open=False, kwargs={"row_factory": dict_row}
+    )
     await app.pool.open()
     yield
     await app.pool.close()
@@ -137,7 +140,13 @@ async def alltasks(
     hx_request: Optional[str] = Header(None),
 ):
     results = await getTasks(request.app.pool)
-    return results
+    context = {
+        "request": request,
+        "rootPath": ROOT_PATH,
+        "inprogress": results,
+    }
+    print(results)
+    return templates.TemplateResponse("inprogress.html", context)
 
 
 @app.get("/task/progress/{id}")
