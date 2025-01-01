@@ -193,14 +193,14 @@ async def job(
 
 
 @app.get("/task/{id}")
-async def job(
+async def task(
     request: Request,
     response: Response,
     id: str,
     hx_request: Optional[str] = Header(None),
 ):
     context = {"request": request, "rootPath": ROOT_PATH, "id": id}
-    return templates.TemplateResponse("complete.html", context)
+    return templates.TemplateResponse("copycomplete.html", context)
 
 
 @app.post("/post")
